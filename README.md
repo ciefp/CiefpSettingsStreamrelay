@@ -1,2 +1,2 @@
-# CiefpWhitelistStreamrelay
+# CiefpSettingsStreamrelay
 Convert bouquets for StreamRelay
