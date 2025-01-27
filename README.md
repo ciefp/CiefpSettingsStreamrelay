@@ -1,2 +1,2 @@
-# CiefpWhitelistStreamrelay
- Creates a whitelist_streamrelay file from userbouquet data
+# CiefpSettingsStreamrelay
+Convert bouquets for StreamRelay
