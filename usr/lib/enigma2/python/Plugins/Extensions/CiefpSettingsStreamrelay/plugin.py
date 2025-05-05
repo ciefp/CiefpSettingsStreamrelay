@@ -9,30 +9,31 @@ from Components.Button import Button
 from Components.Pixmap import Pixmap
 from Tools.Directories import fileExists
 import os
-import re  # Dodaj import na vrh fajla
-
+import re
 
 # Plugin Descriptor
 PLUGIN_NAME = "CiefpSettingsStreamrelay"
 PLUGIN_DIR = "/usr/lib/enigma2/python/Plugins/Extensions/CiefpSettingsStreamrelay"
-PLUGIN_VERSION = "1.1"
+PLUGIN_VERSION = "1.2"
 PLUGIN_DESC = "Convert bouquets for StreamRelay."
 PLUGIN_ICON = "/usr/lib/enigma2/python/Plugins/Extensions/CiefpSettingsStreamrelay/icon.png"
 PLUGIN_BG_IMAGE = os.path.join(PLUGIN_DIR, "background.png")
 
 class StreamRelayConverter(Screen):
-    skin = f"""
-    <screen name="StreamRelayConverter" position="center,center" size="1200,600" title="Ciefp Settings StreamRelay">
-        <widget name="status" position="20,20" size="560,50" font="Regular;25" valign="center" halign="center" />
-        <widget name="info" position="20,80" size="560,100" font="Regular;25" valign="center" halign="left" />
-        <widget name="menu" position="20,200" size="560,300" scrollbarMode="showOnDemand" />
-        <widget name="key_red" position="20,520" size="140,50" font="Bold;18" valign="center" halign="center" backgroundColor="red" foregroundColor="black" />
-        <widget name="key_green" position="180,520" size="140,50" font="Bold;18" valign="center" halign="center" backgroundColor="green" foregroundColor="black" />
-        <widget name="key_yellow" position="340,520" size="140,50" font="Bold;18" valign="center" halign="center" backgroundColor="yellow" foregroundColor="black" />
-        <widget name="key_blue" position="500,520" size="140,50" font="Bold;18" valign="center" halign="center" backgroundColor="blue" foregroundColor="black" />
-        <ePixmap pixmap="{PLUGIN_BG_IMAGE}" position="650,0" size="550,600" alphatest="blend" />
+    skin = """
+    <screen name="StreamRelayConverter" position="center,center" size="1600,800" title="..:: Ciefp Settings Streamrelay ::..">
+        <!-- Left Section (1000x800) -->
+        <widget name="status" position="20,20" size="960,60" font="Regular;30" valign="center" halign="center" transparent="1" />
+        <widget name="info" position="20,100" size="960,120" font="Regular;28" valign="top" halign="left" transparent="1" />
+        <widget name="menu" position="20,240" size="960,400" font="Regular;32" itemHeight="50" scrollbarMode="showOnDemand" transparent="1" backgroundColorSelected="#555555" foregroundColorSelected="white" />
+        <widget name="key_red" position="20,670" size="220,60" font="Bold;24" valign="center" halign="center" backgroundColor="#cc0000" foregroundColor="white" borderWidth="2" borderColor="#333333" cornerRadius="10" transparent="0" />
+        <widget name="key_green" position="260,670" size="220,60" font="Bold;24" valign="center" halign="center" backgroundColor="#00cc00" foregroundColor="white" borderWidth="2" borderColor="#333333" cornerRadius="10" transparent="0" />
+        <widget name="key_yellow" position="500,670" size="220,60" font="Bold;24" valign="center" halign="center" backgroundColor="#cccc00" foregroundColor="white" borderWidth="2" borderColor="#333333" cornerRadius="10" transparent="0" />
+        <widget name="key_blue" position="740,670" size="220,60" font="Bold;24" valign="center" halign="center" backgroundColor="#0000cc" foregroundColor="white" borderWidth="2" borderColor="#333333" cornerRadius="10" transparent="0" />
+        <!-- Right Section (600x800) -->
+        <ePixmap pixmap="{}" position="1000,0" size="600,800" alphatest="blend" />
     </screen>
-    """
+    """.format(PLUGIN_BG_IMAGE)
 
     def __init__(self, session):
         Screen.__init__(self, session)
@@ -157,7 +158,7 @@ class StreamRelayConverter(Screen):
             for i in range(len(entries) - 2):
                 if entries[i].startswith(relevant_reference):  # Prva linija mora sadržati referencu
                     channel_name = entries[i + 1].strip()  # Druga linija je naziv kanala
-                    print(f"Reference {relevant_reference} found. Channel name: {channel_name}")
+                    print(f"Reference {relevant_reference} found at line {i+1}. Channel name: {channel_name}")
                     return channel_name
 
         except Exception as e:
