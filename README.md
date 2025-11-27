@@ -11,13 +11,13 @@ into predefined streamrelay bouquets
 ## Satellites supported by 28.2E Sky UK and 19.2E Sky DE
 
 ## How to use:
-### 1.run the plugin**
-### 2.select bouquets**
+### 1.run the plugin
+### 2.select bouquets
 - **yellow button - Astra 19.2E**
 - **blue button - Astra 28.2E**
 - **it is possible to select both bouquets**
 - **status bar shows what is selected**
-### 3.Start conversion**
+### 3.Start conversion
 the conversion process starts after completion
 restart enigma2
 
