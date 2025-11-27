@@ -13,8 +13,8 @@ into predefined streamrelay bouquets
 ## How to use:
 - **1.run the plugin**
 - **2.select bouquets**
-yellow button - Astra 19.2E
-blue button - Astra 28.2E
+- **yellow button - Astra 19.2E**
+- **blue button - Astra 28.2E**
 it is possible to select both bouquets
 status bar shows what is selected
 - **3.Start conversion**
