@@ -15,8 +15,8 @@ into predefined streamrelay bouquets
 - **2.select bouquets**
 - **yellow button - Astra 19.2E**
 - **blue button - Astra 28.2E**
-it is possible to select both bouquets
-status bar shows what is selected
+- **it is possible to select both bouquets**
+- **status bar shows what is selected**
 - **3.Start conversion**
 the conversion process starts after completion
 restart enigma2
