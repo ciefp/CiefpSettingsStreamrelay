@@ -8,32 +8,56 @@ from Components.MenuList import MenuList
 from Components.Button import Button
 from Components.Pixmap import Pixmap
 from Tools.Directories import fileExists
+from Tools.LoadPixmap import LoadPixmap
+import logging
 import os
 import re
 
 # Plugin Descriptor
 PLUGIN_NAME = "CiefpSettingsStreamrelay"
-PLUGIN_DIR = "/usr/lib/enigma2/python/Plugins/Extensions/CiefpSettingsStreamrelay"
-PLUGIN_VERSION = "1.2"
+PLUGIN_VERSION = "1.3"
 PLUGIN_DESC = "Convert bouquets for StreamRelay."
 PLUGIN_ICON = "/usr/lib/enigma2/python/Plugins/Extensions/CiefpSettingsStreamrelay/icon.png"
-PLUGIN_BG_IMAGE = os.path.join(PLUGIN_DIR, "background.png")
+PLUGIN_PATH = "/usr/lib/enigma2/python/Plugins/Extensions/CiefpSettingsStreamrelay"
+logger = logging.getLogger("CiefpSettingsStreamrelay")
+logger.setLevel(logging.INFO)
 
 class StreamRelayConverter(Screen):
     skin = """
-    <screen name="StreamRelayConverter" position="center,center" size="1600,800" title="..:: Ciefp Settings Streamrelay ::..">
-        <!-- Left Section (1000x800) -->
-        <widget name="status" position="20,20" size="960,60" font="Regular;30" valign="center" halign="center" transparent="1" />
-        <widget name="info" position="20,100" size="960,120" font="Regular;28" valign="top" halign="left" transparent="1" />
-        <widget name="menu" position="20,240" size="960,400" font="Regular;32" itemHeight="50" scrollbarMode="showOnDemand" transparent="1" backgroundColorSelected="#555555" foregroundColorSelected="white" />
-        <widget name="key_red" position="20,670" size="220,60" font="Bold;24" valign="center" halign="center" backgroundColor="#cc0000" foregroundColor="white" borderWidth="2" borderColor="#333333" cornerRadius="10" transparent="0" />
-        <widget name="key_green" position="260,670" size="220,60" font="Bold;24" valign="center" halign="center" backgroundColor="#00cc00" foregroundColor="white" borderWidth="2" borderColor="#333333" cornerRadius="10" transparent="0" />
-        <widget name="key_yellow" position="500,670" size="220,60" font="Bold;24" valign="center" halign="center" backgroundColor="#cccc00" foregroundColor="white" borderWidth="2" borderColor="#333333" cornerRadius="10" transparent="0" />
-        <widget name="key_blue" position="740,670" size="220,60" font="Bold;24" valign="center" halign="center" backgroundColor="#0000cc" foregroundColor="white" borderWidth="2" borderColor="#333333" cornerRadius="10" transparent="0" />
-        <!-- Right Section (600x800) -->
-        <ePixmap pixmap="{}" position="1000,0" size="600,800" alphatest="blend" />
+    <screen name="StreamRelayConverter" position="center,center" size="1600,900" title="..:: Ciefp Settings Streamrelay ::..">
+
+        <!-- DESNA POZADINA (iza svega desno) -->
+        <widget name="sideBackground" position="1000,0" size="600,800" alphatest="on" zPosition="0" />
+
+        <!-- DESNI TEKST -->
+        <widget name="status" position="1020,20" size="560,60" font="Bold;30" foregroundColor="#d5fa02" 
+            valign="center" halign="center" transparent="1" zPosition="2" />
+        <widget name="info" position="1020,100" size="560,120" font="Bold;30" foregroundColor="#d5fa02" 
+            valign="center" halign="center" transparent="1" zPosition="2" />
+
+        <!-- LOGOI (bez preklapanja) -->
+        <widget name="astra1Logo" position="0,0" size="1000,400" alphatest="on" zPosition="1" />
+        <widget name="astra2Logo" position="0,400" size="1000,400" alphatest="on" zPosition="1" />
+
+        <!-- KEYs -->
+        <widget name="key_red" position="0,850" size="400,40" font="Bold;28"
+            halign="center" valign="center" foregroundColor="#080808" backgroundColor="#a00000" zPosition="2" />
+        <ePixmap pixmap="skin_default/buttons/red.png" position="0,850" size="400,40" alphatest="blend" zPosition="1" />
+
+        <widget name="key_green" position="400,850" size="400,40" font="Bold;28"
+            halign="center" valign="center" foregroundColor="#080808" backgroundColor="#00a000" zPosition="2" />
+        <ePixmap pixmap="skin_default/buttons/green.png" position="400,850" size="400,40" alphatest="blend" zPosition="1" />
+
+        <widget name="key_yellow" position="800,850" size="400,40" font="Bold;28"
+            halign="center" valign="center" foregroundColor="#080808" backgroundColor="#a09d00" zPosition="2" />
+        <ePixmap pixmap="skin_default/buttons/yellow.png" position="800,850" size="400,40" alphatest="blend" zPosition="1" />
+
+        <widget name="key_blue" position="1200,850" size="400,40" font="Bold;28"
+            halign="center" valign="center" foregroundColor="#080808" backgroundColor="#0000a0" zPosition="2" />
+        <ePixmap pixmap="skin_default/buttons/blue.png" position="1200,850" size="400,40" alphatest="blend" zPosition="1" />
+
     </screen>
-    """.format(PLUGIN_BG_IMAGE)
+    """
 
     def __init__(self, session):
         Screen.__init__(self, session)
@@ -44,6 +68,9 @@ class StreamRelayConverter(Screen):
 
         self["status"] = Label("Welcome to Ciefp Settings StreamRelay!")
         self["info"] = Label("Select bouquets to convert.")
+        self["astra1Logo"] = Pixmap()
+        self["astra2Logo"] = Pixmap()
+        self["sideBackground"] = Pixmap()
         self["key_red"] = Button("Cancel")
         self["key_green"] = Button("Start Conversion")
         self["key_yellow"] = Button("Select Astra 19.2E")
@@ -58,6 +85,46 @@ class StreamRelayConverter(Screen):
         })
 
         self.selected_bouquets = []
+        
+        self.onLayoutFinish.append(self.loadastra1Logo)
+        self.onLayoutFinish.append(self.loadastra2Logo)
+        self.onLayoutFinish.append(self.loadSideBackground)
+
+    def loadastra1Logo(self):
+        logo_path = os.path.join(PLUGIN_PATH, "astra1logo.png")
+        if os.path.exists(logo_path):
+            try:
+                pixmap = LoadPixmap(logo_path)
+                if pixmap and self["astra1Logo"].instance:
+                    self["astra1Logo"].instance.setPixmap(pixmap)
+            except Exception as e:
+                logger.error(f"Error loading plugin astra1logo: {str(e)}")
+        else:
+            logger.error(f"astra1 logo not found: {logo_path}")        
+
+    def loadastra2Logo(self):
+        logo_path = os.path.join(PLUGIN_PATH, "astra2logo.png")
+        if os.path.exists(logo_path):
+            try:
+                pixmap = LoadPixmap(logo_path)
+                if pixmap and self["astra2Logo"].instance:
+                    self["astra2Logo"].instance.setPixmap(pixmap)
+            except Exception as e:
+                logger.error(f"Error loading plugin astra2logo: {str(e)}")
+        else:
+            logger.error(f"astra2 logo not found: {logo_path}")        
+
+    def loadSideBackground(self):
+        bg_path = os.path.join(PLUGIN_PATH, "sidebackground.png")
+        if os.path.exists(bg_path):
+            try:
+                pixmap = LoadPixmap(bg_path)
+                if pixmap and self["sideBackground"].instance:
+                    self["sideBackground"].instance.setPixmap(pixmap)
+            except Exception as e:
+                logger.error(f"Error loading side background: {str(e)}")
+        else:
+            logger.error(f"Side background not found: {bg_path}")
 
     def select_bouquet_19e(self):
         if "19.2E" not in self.selected_bouquets:
