@@ -15,7 +15,7 @@ import re
 
 # Plugin Descriptor
 PLUGIN_NAME = "CiefpSettingsStreamrelay"
-PLUGIN_VERSION = "1.3"
+PLUGIN_VERSION = "1.4"
 PLUGIN_DESC = "Convert bouquets for StreamRelay."
 PLUGIN_ICON = "/usr/lib/enigma2/python/Plugins/Extensions/CiefpSettingsStreamrelay/icon.png"
 PLUGIN_PATH = "/usr/lib/enigma2/python/Plugins/Extensions/CiefpSettingsStreamrelay"
@@ -24,37 +24,46 @@ logger.setLevel(logging.INFO)
 
 class StreamRelayConverter(Screen):
     skin = """
-    <screen name="StreamRelayConverter" position="center,center" size="1600,900" title="..:: Ciefp Settings Streamrelay ::..">
+    <screen name="StreamRelayConverter" position="center,center" size="1920,1080"  backgroundColor="#011a2e" >
 
-        <!-- DESNA POZADINA (iza svega desno) -->
-        <widget name="sideBackground" position="1000,0" size="600,800" alphatest="on" zPosition="0" />
+        <!-- POZADINA -->
+        <widget name="background" position="740,110" size="1150,700" pixmap="skin_default/background.png" zPosition="0" />
 
-        <!-- DESNI TEKST -->
-        <widget name="status" position="1020,20" size="560,60" font="Bold;30" foregroundColor="#d5fa02" 
+        <!-- NASLOV -->
+        <widget name="channel_title" position="0,20" size="1920,60" font="Bold;42" 
+            halign="center" valign="center" backgroundColor="#012e01" foregroundColor="#FFFFFF" 
+            transparent="0" zPosition="2" />
+            
+        <!-- LEVA STRANA - LOGOI -->
+        <widget name="astra1Logo" position="20,110" size="680,310" alphatest="on" zPosition="1" />
+        <widget name="astra2Logo" position="20,460" size="680,350" alphatest="on" zPosition="1" />
+
+        <!-- DESNA STRANA - TEKST -->
+        <widget name="status" position="720,120" size="1180,80" font="Bold;32" foregroundColor="#d5fa02" 
             valign="center" halign="center" transparent="1" zPosition="2" />
-        <widget name="info" position="1020,100" size="560,120" font="Bold;30" foregroundColor="#d5fa02" 
+        <widget name="info" position="720,220" size="1180,200" font="Bold;30" foregroundColor="#d5fa02" 
             valign="center" halign="center" transparent="1" zPosition="2" />
 
-        <!-- LOGOI (bez preklapanja) -->
-        <widget name="astra1Logo" position="0,0" size="1000,400" alphatest="on" zPosition="1" />
-        <widget name="astra2Logo" position="0,400" size="1000,400" alphatest="on" zPosition="1" />
+        <!-- BUTTONI -->
+        <widget name="key_red" position="0,850" size="480,50" font="Bold;30"
+            halign="center" valign="center" foregroundColor="#FFFFFF" backgroundColor="#a00000" zPosition="2" />
+        <ePixmap pixmap="skin_default/buttons/red.png" position="0,850" size="480,50" alphatest="blend" zPosition="1" />
 
-        <!-- KEYs -->
-        <widget name="key_red" position="0,850" size="400,40" font="Bold;28"
-            halign="center" valign="center" foregroundColor="#080808" backgroundColor="#a00000" zPosition="2" />
-        <ePixmap pixmap="skin_default/buttons/red.png" position="0,850" size="400,40" alphatest="blend" zPosition="1" />
+        <widget name="key_green" position="480,850" size="480,50" font="Bold;30"
+            halign="center" valign="center" foregroundColor="#FFFFFF" backgroundColor="#00a000" zPosition="2" />
+        <ePixmap pixmap="skin_default/buttons/green.png" position="480,850" size="480,50" alphatest="blend" zPosition="1" />
 
-        <widget name="key_green" position="400,850" size="400,40" font="Bold;28"
-            halign="center" valign="center" foregroundColor="#080808" backgroundColor="#00a000" zPosition="2" />
-        <ePixmap pixmap="skin_default/buttons/green.png" position="400,850" size="400,40" alphatest="blend" zPosition="1" />
+        <widget name="key_yellow" position="960,850" size="480,50" font="Bold;30"
+            halign="center" valign="center" foregroundColor="#FFFFFF" backgroundColor="#a09d00" zPosition="2" />
+        <ePixmap pixmap="skin_default/buttons/yellow.png" position="960,850" size="480,50" alphatest="blend" zPosition="1" />
 
-        <widget name="key_yellow" position="800,850" size="400,40" font="Bold;28"
-            halign="center" valign="center" foregroundColor="#080808" backgroundColor="#a09d00" zPosition="2" />
-        <ePixmap pixmap="skin_default/buttons/yellow.png" position="800,850" size="400,40" alphatest="blend" zPosition="1" />
+        <widget name="key_blue" position="1440,850" size="480,50" font="Bold;30"
+            halign="center" valign="center" foregroundColor="#FFFFFF" backgroundColor="#0000a0" zPosition="2" />
+        <ePixmap pixmap="skin_default/buttons/blue.png" position="1440,850" size="480,50" alphatest="blend" zPosition="1" />
 
-        <widget name="key_blue" position="1200,850" size="400,40" font="Bold;28"
-            halign="center" valign="center" foregroundColor="#080808" backgroundColor="#0000a0" zPosition="2" />
-        <ePixmap pixmap="skin_default/buttons/blue.png" position="1200,850" size="400,40" alphatest="blend" zPosition="1" />
+        <!-- STATUSNA TRAKA -->
+        <widget name="statusbar" position="0,920" size="1920,40" font="Regular;22" 
+            halign="center" valign="center" backgroundColor="#012e01" foregroundColor="#888888" zPosition="2" />
 
     </screen>
     """
@@ -66,11 +75,15 @@ class StreamRelayConverter(Screen):
         self["menu"] = MenuList([("Select Astra 19.2E Bouquet", "19.2E"),
                                  ("Select Astra 28.2E Bouquet", "28.2E")])
 
+        self["channel_title"] = Label("..:: Ciefp Settings Streamrelay ::..")
         self["status"] = Label("Welcome to Ciefp Settings StreamRelay!")
         self["info"] = Label("Select bouquets to convert.")
+        self["statusbar"] = Label("v1.3 | Press GREEN to start conversion")
+        
         self["astra1Logo"] = Pixmap()
         self["astra2Logo"] = Pixmap()
-        self["sideBackground"] = Pixmap()
+        self["background"] = Pixmap()
+        
         self["key_red"] = Button("Cancel")
         self["key_green"] = Button("Start Conversion")
         self["key_yellow"] = Button("Select Astra 19.2E")
@@ -86,9 +99,22 @@ class StreamRelayConverter(Screen):
 
         self.selected_bouquets = []
         
+        self.onLayoutFinish.append(self.loadBackground)
         self.onLayoutFinish.append(self.loadastra1Logo)
         self.onLayoutFinish.append(self.loadastra2Logo)
-        self.onLayoutFinish.append(self.loadSideBackground)
+
+    def loadBackground(self):
+        bg_path = os.path.join(PLUGIN_PATH, "background.png")
+        if os.path.exists(bg_path):
+            try:
+                pixmap = LoadPixmap(bg_path)
+                if pixmap and self["background"].instance:
+                    self["background"].instance.setPixmap(pixmap)
+            except Exception as e:
+                logger.error(f"Error loading background: {str(e)}")
+        else:
+            # Koristi default pozadinu ako ne postoji
+            pass
 
     def loadastra1Logo(self):
         logo_path = os.path.join(PLUGIN_PATH, "astra1logo.png")
@@ -114,33 +140,26 @@ class StreamRelayConverter(Screen):
         else:
             logger.error(f"astra2 logo not found: {logo_path}")        
 
-    def loadSideBackground(self):
-        bg_path = os.path.join(PLUGIN_PATH, "sidebackground.png")
-        if os.path.exists(bg_path):
-            try:
-                pixmap = LoadPixmap(bg_path)
-                if pixmap and self["sideBackground"].instance:
-                    self["sideBackground"].instance.setPixmap(pixmap)
-            except Exception as e:
-                logger.error(f"Error loading side background: {str(e)}")
-        else:
-            logger.error(f"Side background not found: {bg_path}")
-
     def select_bouquet_19e(self):
         if "19.2E" not in self.selected_bouquets:
             self.selected_bouquets.append("19.2E")
-            self["status"].setText(f"Selected bouquets: {', '.join(self.selected_bouquets)}")
+            self["status"].setText(f"Selected: {', '.join(self.selected_bouquets)}")
+            self["statusbar"].setText("Astra 19.2E selected | Press GREEN to convert")
 
     def select_bouquet_28e(self):
         if "28.2E" not in self.selected_bouquets:
             self.selected_bouquets.append("28.2E")
-            self["status"].setText(f"Selected bouquets: {', '.join(self.selected_bouquets)}")
+            self["status"].setText(f"Selected: {', '.join(self.selected_bouquets)}")
+            self["statusbar"].setText("Astra 28.2E selected | Press GREEN to convert")
 
     def start_conversion(self):
         if not self.selected_bouquets:
             self["info"].setText("No bouquets selected for conversion.")
+            self["statusbar"].setText("ERROR: No bouquets selected!")
             return
 
+        self["statusbar"].setText("Converting... Please wait...")
+        
         for bouquet in self.selected_bouquets:
             if bouquet == "19.2E":
                 self.convert_and_save(
@@ -165,6 +184,9 @@ class StreamRelayConverter(Screen):
                     header="#NAME • 28,2 E - SKY UK • icam :: streamrelay ::\n"
                 )
 
+        self["statusbar"].setText("Conversion completed successfully!")
+        self["info"].setText("Conversion complete!\nPress OK to restart Enigma2")
+        
         self.session.openWithCallback(
             self.confirm_restart,
             MessageBox,
@@ -225,7 +247,7 @@ class StreamRelayConverter(Screen):
             for i in range(len(entries) - 2):
                 if entries[i].startswith(relevant_reference):  # Prva linija mora sadržati referencu
                     channel_name = entries[i + 1].strip()  # Druga linija je naziv kanala
-                    print(f"Reference {relevant_reference} found at line {i+1}. Channel name: {channel_name}")
+                    print(f"Reference {relevant_reference} found at line {i+1}. Channel name: {channel_name}")
                     return channel_name
 
         except Exception as e:
